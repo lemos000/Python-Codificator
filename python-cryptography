@@ -1,1 +1,85 @@
+# Cryptography Python code
+> Criptografia em python utilizando a biblioteca fernet
 
+```
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC #SENHA EM INPUT
+import base64
+import os
+import time 
+import sys
+
+
+# Barra de carregamento
+total_iterations = 100
+def progress_bar(iteration, total, length=50, fill='█'):
+    progress = (iteration / total)
+    arrow = fill * int(length * progress)
+    spaces = ' ' * (length - len(arrow))
+    sys.stdout.write(f'\r[{arrow + spaces}] {int(progress * 100)}%')
+    sys.stdout.flush()
+
+# Função para carregar a chave Fernet a partir de um arquivo
+def carregar_chave():
+    senha = input('Digite uma chave até 128 caracteres: ').encode()
+    salt = os.urandom(16)
+    kdf = PBKDF2HMAC(
+    algorithm=hashes.SHA256(),
+    length=32,
+    salt=salt,
+    iterations=480000,)
+    chave = base64.urlsafe_b64encode(kdf.derive(senha))
+    return chave
+
+# Função para criptografar uma mensagem
+def criptografar_mensagem(mensagem, chave):
+    fernet = Fernet(chave)
+    mensagem_criptografada = fernet.encrypt(mensagem.encode())
+    return mensagem_criptografada
+
+# Função para descriptografar uma mensagem
+def descriptografar_mensagem(mensagem_criptografada, chave):
+    fernet = Fernet(chave)
+    mensagem_descriptografada = fernet.decrypt(mensagem_criptografada).decode()
+    return mensagem_descriptografada
+
+# Carregue a chave
+chave_secreta = carregar_chave()
+
+if chave_secreta:
+    while True:
+        print("\nEscolha uma opção:")
+        print("1. Criptografar uma mensagem")
+        print("2. Descriptografar uma mensagem")
+        print("3. Redefinir chave")
+        print("4. Sair")
+
+        escolha = input("Digite o número da opção: ")
+
+        if escolha == "1":
+            mensagem = input("Digite a mensagem que deseja criptografar: ")
+            mensagem_criptografada = criptografar_mensagem(mensagem, chave_secreta)
+            print('Criptografando...')
+            for i in range(total_iterations):
+                time.sleep(0.01)
+                progress_bar(i + 5, total_iterations)
+            print("\n\nMensagem criptografada:", mensagem_criptografada.decode())
+            print("\nConcluído!")
+        elif escolha == "2":
+            mensagem_criptografada = input("Cole a mensagem criptografada aqui: ")
+            mensagem_descriptografada = descriptografar_mensagem(mensagem_criptografada.encode(), chave_secreta)
+            print("Mensagem descriptografada:", mensagem_descriptografada)
+        elif escolha == "3":
+            carregar_chave()
+        elif escolha=='4':
+            print("Saindo do programa.")
+            break
+        else:
+            print("Opção inválida. Por favor, escolha uma opção válida.")
+else:
+    print("Chave inválida. Por favor, verifique a chave e tente novamente.")
+
+
+
+```
