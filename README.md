@@ -1,4 +1,3 @@
-# Archives
-> Arquivos gerais
+# Programa de codificação de strings
 
-Repositório onde irei guardar todos os meu projetos, sem distinção de linguagem ou objetivo
+Código em python que codifica mensagens em codificação direta e as encripta em mensagens codificadas baseadas na chave escolhida pelo usuário.
